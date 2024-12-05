@@ -4,30 +4,31 @@ import gym.Exception.InvalidAgeException;
 import gym.customers.Person;
 
 public class Gym {
-    private static Gym instance;
+    private static final Gym INSTANCE = new Gym();
     private String name;
     private Secretary secretary;
 
-    private Gym() {}
-
-    public static Gym getInstance() {
-        if (instance == null) {
-            instance = new Gym();
+    private Gym() {
+        if (INSTANCE != null) {
+            throw new IllegalStateException("Cannot instantiate singleton class using reflection");
         }
-        return instance;
+    }
+    public static Gym getInstance() {
+        return INSTANCE;
+    }
+
+    protected Object readResolve() {
+        return getInstance();
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setSecretary(Person person, double salary) {
-        try {
-            this.secretary = new Secretary(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth().toString(), salary);
-        } catch (InvalidAgeException e) {
-            throw new RuntimeException("Invalid age for secretary: " + person.getName(), e);
-        }
+    public void setSecretary(Person person, double salary) throws InvalidAgeException {
+        this.secretary = new Secretary(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth().toString(), salary);
     }
+
 
 
     public Secretary getSecretary() {

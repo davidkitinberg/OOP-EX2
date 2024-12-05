@@ -14,7 +14,7 @@ public class Secretary extends Person {
     private List<String> actions = new ArrayList<>();
 
     public Secretary(String name, int age, Gender gender, String dateOfBirth, double salary) throws InvalidAgeException {
-        super(name, age, gender, dateOfBirth); // This line calls the Person constructor
+        super(name, age, gender, dateOfBirth);
         this.salary = salary;
     }
 
@@ -31,11 +31,13 @@ public class Secretary extends Person {
     }
 
     public void unregisterClient(Client client) throws ClientNotRegisteredException {
-        if (!clients.remove(client)) {
+        if (!clients.contains(client)) {
             throw new ClientNotRegisteredException("Client not found: " + client.getName());
         }
+        clients.remove(client);
         actions.add("Unregistered client: " + client.getName());
     }
+
 
     public Instructor hireInstructor(Person person, double hourlyWage, List<SessionType> qualifications) {
         Instructor instructor = new Instructor(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth(), hourlyWage, qualifications);
