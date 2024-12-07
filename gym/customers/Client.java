@@ -26,6 +26,9 @@ public class Client extends Person {
     public double getBalance() {
         return balance;
     }
+    public void setBalance(double newBalance) {
+        balance = newBalance;
+    }
 
     public void reduceBalance(double amount) {
         balance -= amount;
