@@ -2,6 +2,10 @@ package gym.customers;
 
 import gym.Exception.InvalidAgeException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Person {
     private String name;
     private int age;
@@ -36,7 +40,10 @@ public class Person {
     }
 
     public int getAge() {
-        return age;
+        LocalDate currentDate = LocalDate.now();
+        LocalDate sessionDate = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        return currentDate.getYear() - sessionDate.getYear() -
+                (currentDate.getDayOfYear() < sessionDate.getDayOfYear() ? 1 : 0);
     }
 
     public Gender getGender() {

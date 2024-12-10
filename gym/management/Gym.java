@@ -4,33 +4,31 @@ import gym.Exception.InvalidAgeException;
 import gym.customers.Person;
 
 public class Gym {
-    private static final Gym INSTANCE = new Gym();
+    private static final Gym INSTANCE = new Gym("gym", 1000);
     private String name;
     private Secretary secretary;
     private double gymBalance;
 
-    private Gym() {
+    private Gym(String name, double gymBalance ) {
         if (INSTANCE != null) {
             throw new IllegalStateException("Cannot instantiate singleton class using reflection");
         }
-    }
-    public static Gym getInstance() {
-        return INSTANCE;
+        this.name = name;
+        this.gymBalance = gymBalance;
     }
 
-    protected Object readResolve() {
-        return getInstance();
+    public static Gym getInstance() {
+        return INSTANCE;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
+
     public void setSecretary(Person person, double salary) throws InvalidAgeException {
-        if (secretary != null) {
-            secretary.blockAccess(); // Block old secretary
-        }
-        this.secretary = new Secretary(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth().toString(), salary);
+        Secretary.replaceInstance(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth(), salary);
+        secretary = Secretary.getInstance(); // Update the field to point to the new singleton instance
     }
 
     public void setGymBalance(double gymBalance) {
@@ -42,7 +40,7 @@ public class Gym {
     }
 
     public Secretary getSecretary() {
-        return secretary;
+        return Secretary.getInstance();
     }
 
     @Override
