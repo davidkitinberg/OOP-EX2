@@ -55,7 +55,7 @@ Nofar Notifications: [The instructor will be a few minutes late for the session,
 ---Gym information---
 Gym Name: CrossFit
 Gym Secretary: ID: 1113 | Name: Maayan | Gender: Female | Birthday: 21-12-2005 | Age: 19 | Balance: 50 | Role: Secretary | Salary per Month: 8000
-Gym Balance: 1010
+Gym Balance: -8410
 
 Clients Data:
 ID: 1112 | Name: Nofar | Gender: Female | Birthday: 03-07-1998 | Age: 26 | Balance: 890

@@ -5,6 +5,7 @@ import gym.Exception.InvalidAgeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Person {
     private String name;
@@ -63,4 +64,24 @@ public class Person {
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 '}';
     }
+    public static boolean comparePersons(Person c1, Person c2) {
+        // Compare all fields for equality
+        return c1.getName().equals(c2.getName()) &&
+                c1.getAge() == c2.getAge() &&
+                c1.getGender() == c2.getGender() &&
+                c1.getDateOfBirth().equals(c2.getDateOfBirth());
+    }
+    public static boolean isContained(List<Client> personList, Person personToCheck) {
+        // Iterate over the list and compare each Person
+        for (Person p : personList) {
+            if (p.getName().equals(personToCheck.getName()) &&
+                    p.getAge() == personToCheck.getAge() &&
+                    p.getGender() == personToCheck.getGender() &&
+                    p.getDateOfBirth().equals(personToCheck.getDateOfBirth())) {
+                return true; // Person is found in the list
+            }
+        }
+        return false; // Person is not in the list
+    }
+
 }

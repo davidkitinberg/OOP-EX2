@@ -41,6 +41,9 @@ public class Secretary extends Person {
 
     // Ensure this secretary has access rights
     private void ensureAccess() {
+        if (isContained(formerSecretaries,instance)) {
+            throw new NullPointerException("Error: Former secretaries are not permitted to perform actions");
+        }
 
     }
 
@@ -50,9 +53,13 @@ public class Secretary extends Person {
             if (person.getAge() < 18) {
                 throw new InvalidAgeException("Error: Client must be at least 18 years old to register");
             }
-            if (clients.contains(person)) {
+
+            // check if client is already registered
+            if(isContained(clients, person))
+            {
                 throw new DuplicateClientException("Error: The client is already registered");
             }
+
             Client client = new Client(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth(), 1000.0);
             clients.add(client);
             actions.add("Registered new client: " + client.getName());
@@ -85,19 +92,10 @@ public class Secretary extends Person {
         return instructor;
     }
 
-//    public Session addSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) throws InstructorNotQualifiedException {
-//        ensureAccess();
-//        if (!instructor.isQualifiedFor(type)) {
-//            throw new InstructorNotQualifiedException("Instructor is not qualified to conduct this session type.");
-//        }
-//        Session session = new Session(type, dateTime, forum, instructor);
-//        sessions.add(session);
-//        actions.add("Created new session: " + type.getName() + " on " + dateTime + "with instructor: " + instructor.getName());
-//        return session;
-//    }
-public Session addSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) {
+    public Session addSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) throws InstructorNotQualifiedException {
 
-    try {
+    try
+    {
         // Use the factory to create the session
         Session session = SessionFactory.createSession(type, dateTime, forum, instructor);
 
@@ -106,62 +104,58 @@ public Session addSession(SessionType type, String dateTime, ForumType forum, In
         actions.add("Created new session: " + type.getName() + " on " + dateTime + " with instructor: " + instructor.getName());
 
         return session; // Return the created session
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException e)
+    {
         // Handle invalid session creation
         return null; // Return null if session creation fails
     }
-}
-
-    public Session addSession1(SessionType type, String dateTime, ForumType forum, Instructor instructor) {
-        ensureAccess();
-        try {
-            if (instructor.isQualifiedFor(type))
-            {
-                Session session = new Session(type, dateTime, forum, instructor);
-                sessions.add(session);
-                actions.add("Created new session: " + type.getName() + " on " + dateTime + " with instructor: " + instructor.getName());
-                return session;
-            }
-
-            throw new InstructorNotQualifiedException("Instructor is not qualified to conduct this session type.");
-        } catch (InstructorNotQualifiedException e) {
-            //actions.add("Failed to create session: " + type.getName() + " - " + e.getMessage());
-            System.out.println(e.getMessage());
-            return null; // Return null if session creation fails
-        }
     }
-    public void registerClientToLesson(Client client, Session session) {
+
+
+
+    public void registerClientToLesson(Client client, Session session) throws ClientNotRegisteredException,DuplicateClientException  {
         ensureAccess();
         try {
-            if (!clients.contains(client)) {
+            // check if client is within the clients list
+            if(!isContained(clients, client))
+            {
                 throw new ClientNotRegisteredException("Error: The client is not registered with the gym and cannot enroll in lessons");
             }
-            if (session.getParticipants().contains(client)) {
+
+            // check if client is already registered to this lesson
+            if(isContained(session.getParticipants(), client))
+            {
                 throw new DuplicateClientException("Error: The client is already registered for this lesson");
             }
 
+            // check if lesson is expired
             if (session.isExpired()) {
                 actions.add("Failed registration: Session is not in the future");
                 return;
             }
 
-            try {
-                if (!session.isForumCompatible(client)) {
-                    if (session.getForum() == ForumType.Seniors) {
-                        actions.add("Failed registration: Client doesn't meet the age requirements for this session (" + session.getForum() + ")");
-                    } else if (session.getForum() == ForumType.Male || session.getForum() == ForumType.Female) {
-                        actions.add("Failed registration: Client's gender doesn't match the session's gender requirements (" + session.getForum() + ")");
-                    }
-                    throw new IllegalArgumentException("Client is not compatible with the session forum.");
+            // check if client is met with lesson's forum type
+
+            if (!session.isForumCompatible(client))
+            {
+                if (session.getForum() == ForumType.Seniors)
+                {
+                    actions.add("Failed registration: Client doesn't meet the age requirements for this session (" + session.getForum() + ")");
                 }
-            } catch (IllegalArgumentException e) {
-                actions.add("Failed registration: " + e.getMessage());
-                return; // Exit the method since the client is not compatible with the session
+                else if (session.getForum() == ForumType.Male || session.getForum() == ForumType.Female)
+                {
+                    actions.add("Failed registration: Client's gender doesn't match the session's gender requirements (" + session.getForum() + ")");
+                }
+                return;
+                //return; // Exit the method since the client is not compatible with the session
             }
+
+            // check if this session has enough space for another client
             if (!session.hasSpace()) {
                 actions.add("Failed registration: No available spots for session");
                 return;
             }
+            // check if client has sufficient balance for this lesson
             if (client.getBalance() < session.getPrice()) {
                 actions.add("Failed registration: Client doesn't have enough balance");
                 return;
@@ -172,7 +166,7 @@ public Session addSession(SessionType type, String dateTime, ForumType forum, In
             actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
         } catch (ClientNotRegisteredException | DuplicateClientException | IllegalArgumentException | InsufficientFundsException e) {
             actions.add("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
-            System.out.println(e.getMessage());
+            throw e; // Re-throw the exception to propagate it to the caller
         }
     }
 
