@@ -7,10 +7,10 @@ public enum SessionType {
     Ninja("Ninja", 150, 5);
 
     private final String name;
-    private final double price;
+    private final int price;
     private final int maxParticipants;
 
-    SessionType(String name, double price, int maxParticipants) {
+    SessionType(String name, int price, int maxParticipants) {
         this.name = name;
         this.price = price;
         this.maxParticipants = maxParticipants;
@@ -20,7 +20,7 @@ public enum SessionType {
         return name;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 

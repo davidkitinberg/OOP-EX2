@@ -82,7 +82,7 @@ public class Session {
     public ForumType getForum() {
         return forum;
     }
-    public double getPrice() {
+    public int getPrice() {
         return type.getPrice();
     }
 
@@ -93,4 +93,13 @@ public class Session {
     public String getDateTime() {
         return dateTime;
     }
+    @Override
+    public String toString() {
+        return "Session Type: " + type.getName() +
+                " | Date: " + dateTime +
+                " | Forum: " + forum +
+                " | Instructor: " + instructor.getName() +
+                " | Participants: " + participants.size() + "/" + type.getMaxParticipants();
+    }
+
 }

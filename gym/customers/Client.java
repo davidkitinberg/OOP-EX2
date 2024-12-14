@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client extends Person {
-    private double balance;
+    //private double balance;
     private List<String> notifications = new ArrayList<>();
 
-    public Client(String name, int age, Gender gender, String dateOfBirth, double balance) throws InvalidAgeException {
-        super(name, age, gender, dateOfBirth); // This can throw InvalidAgeException
-        this.balance = balance;
+    public Client(String name, int balance, Gender gender, String dateOfBirth) throws InvalidAgeException {
+        super(name, balance, gender, dateOfBirth); // This can throw InvalidAgeException
+        //this.balance = balance;
     }
 
 
@@ -23,15 +23,16 @@ public class Client extends Person {
         return notifications;
     }
 
-    public double getBalance() {
-        return balance;
-    }
-    public void setBalance(double newBalance) {
-        balance = newBalance;
+
+    @Override
+    public String toString() {
+        return "ID: " + this.hashCode() +
+                " | Name: " + getName() +
+                " | Gender: " + getGender() +
+                " | Birthday: " + getDateOfBirth() +
+                " | Age: " + getAge() +
+                " | Balance: " + getBalance();
     }
 
-    public void reduceBalance(double amount) {
-        balance -= amount;
-    }
 }
 

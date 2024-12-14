@@ -3,21 +3,20 @@ package gym.customers;
 import gym.Exception.InvalidAgeException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Person {
     private String name;
-    private int age;
+    private int balance;
     private Gender gender;
     private String dateOfBirth; // Now stored as a string in the specified format
 
-    public Person(String name, int age, Gender gender, String dateOfBirth) throws InvalidAgeException {
-        validateAge(age);
+    public Person(String name, int balance, Gender gender, String dateOfBirth) throws InvalidAgeException {
+        //validateAge(balance);
         validateFormat(dateOfBirth); // Validate the format of the dateOfBirth string
         this.name = name;
-        this.age = age;
+        this.balance = balance;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
     }
@@ -27,6 +26,16 @@ public class Person {
         if (age < 18) {
             throw new InvalidAgeException("Person must be at least 18 years old.");
         }
+    }
+    public int getBalance() {
+        return balance;
+    }
+    public void setBalance(int newBalance) {
+        balance = newBalance;
+    }
+
+    public void reduceBalance(int amount) {
+        balance -= amount;
     }
 
     // Validation for date format
@@ -59,7 +68,7 @@ public class Person {
     public String toString() {
         return "Person{" +
                 "name='" + name + '\'' +
-                ", age=" + age +
+                ", balance=" + balance +
                 ", gender=" + gender +
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 '}';

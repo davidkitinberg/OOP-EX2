@@ -5,10 +5,6 @@ import gym.customers.Instructor;
 
 public class SessionFactory {
     public static Session createSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) throws InstructorNotQualifiedException {
-        // Input validation
-        if (type == null || dateTime == null || forum == null || instructor == null) {
-            throw new IllegalArgumentException("Error: All parameters must be provided to create a Session.");
-        }
 
         // Ensure the instructor is qualified for the session type
         if (!instructor.isQualifiedFor(type)) {
