@@ -3,6 +3,9 @@ package gym.management.Sessions;
 import gym.Exception.InstructorNotQualifiedException;
 import gym.customers.Instructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class SessionFactory {
     public static Session createSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) throws InstructorNotQualifiedException {
 
@@ -14,4 +17,5 @@ public class SessionFactory {
         // Create and return a new Session object
         return new Session(type, dateTime, forum, instructor);
     }
+
 }

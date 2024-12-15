@@ -113,7 +113,7 @@ public class Secretary extends Person {
         //sessions.add(session);
         gym.addSession(session);
         //actions.add("Created new session: " + type.getName() + " on " + dateTime + " with instructor: " + instructor.getName());
-        gym.addAction("Created new session: " + type.getName() + " on " + dateTime + " with instructor: " + instructor.getName());
+        gym.addAction("Created new session: " + type.getName() + " on " + session.getDateTime() + " with instructor: " + instructor.getName());
 
         return session; // Return the created session
     } catch (IllegalArgumentException e)
@@ -256,9 +256,9 @@ public class Secretary extends Person {
     private static String extractDate(String dateTimeString) {
         try {
             // Check if the input includes a time component
-            if (dateTimeString.matches("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}")) {
+            if (dateTimeString.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}")) {
                 // If it includes time, parse it as LocalDateTime
-                LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+                LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
                 return dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             } else if (dateTimeString.matches("\\d{2}-\\d{2}-\\d{4}")) {
                 // If it only includes the date, parse it as LocalDate

@@ -19,10 +19,24 @@ public class Session {
     public Session(SessionType type, String dateTime, ForumType forum, Instructor instructor) {
         this.type = type;
         validateFormat(dateTime);
-        this.dateTime = dateTime;
+        this.dateTime = convertDateTimeFormat(dateTime);
         this.forum = forum;
         this.instructor = instructor;
     }
+    public static String convertDateTimeFormat(String inputDateTime) {
+        // Define the input format
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+        // Define the desired output format
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        // Parse the input string into a LocalDateTime object
+        LocalDateTime dateTime = LocalDateTime.parse(inputDateTime, inputFormatter);
+
+        // Format the LocalDateTime object into the desired string format
+        return dateTime.format(outputFormatter);
+    }
+
 
     // Validation for date format
     private void validateFormat(String dateOfBirth) {
@@ -34,7 +48,7 @@ public class Session {
 
     public boolean isExpired() {
         // Parse session date-time
-        LocalDateTime sessionDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
+        LocalDateTime sessionDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
         // Get current time formatted to the same pattern
         LocalDateTime currentDateTime = LocalDateTime.now();
