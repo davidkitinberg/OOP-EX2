@@ -127,30 +127,36 @@ public class Secretary extends Person {
 
     public void registerClientToLesson(Client client, Session session) throws ClientNotRegisteredException,DuplicateClientException  {
         ensureAccess();
+        boolean flag=false;
         try {
             // check if client is within the clients list
             if(!isContained(gym.getClients(), client))
             {
+                flag=true;
                 throw new ClientNotRegisteredException("Error: The client is not registered with the gym and cannot enroll in lessons");
             }
 
             // check if client is already registered to this lesson
             if(isContained(session.getParticipants(), client))
             {
+                flag=true;
                 throw new DuplicateClientException("Error: The client is already registered for this lesson");
             }
 
             // check if lesson is expired
             if (session.isExpired()) {
-                gym.addAction("Failed registration: Session is not in the future");
+                flag=true;
+                gym.addAction("Failed registration: " +
+                        "Session is not in the future");
                 //actions.add("Failed registration: Session is not in the future");
-                return;
             }
 
             // check if client is met with lesson's forum type
 
             if (!session.isForumCompatible(client))
             {
+                flag=true;
+
                 if (session.getForum() == ForumType.Seniors)
                 {
                     gym.addAction("Failed registration: Client doesn't meet the age requirements for this session (" + session.getForum() + ")");
@@ -158,10 +164,10 @@ public class Secretary extends Person {
                 }
                 else if (session.getForum() == ForumType.Male || session.getForum() == ForumType.Female)
                 {
-                    gym.addAction("Failed registration: Client's gender doesn't match the session's gender requirements (" + session.getForum() + ")");
+                    gym.addAction("Failed registration: Client's gender doesn't match the session's gender requirements");
                     //actions.add("Failed registration: Client's gender doesn't match the session's gender requirements (" + session.getForum() + ")");
                 }
-                return;
+
                 //return; // Exit the method since the client is not compatible with the session
             }
 
@@ -169,19 +175,22 @@ public class Secretary extends Person {
             if (!session.hasSpace()) {
                 gym.addAction("Failed registration: No available spots for session");
                 //actions.add("Failed registration: No available spots for session");
-                return;
+                flag=true;
+
             }
             // check if client has sufficient balance for this lesson
             if (client.getBalance() < session.getPrice()) {
                 gym.addAction("Failed registration: Client doesn't have enough balance");
                 //actions.add("Failed registration: Client doesn't have enough balance");
-                return;
+                flag=true;
+
             }
-            session.addParticipant(client);
-            client.setBalance(client.getBalance() - session.getPrice());
-            Gym.getInstance().setGymBalance(Gym.getInstance().getGymBalance() + session.getPrice());
-            gym.addAction("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime() + " for price: " + session.getPrice());
-            //actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
+            if (flag==false) {
+                session.addParticipant(client);
+                client.setBalance(client.getBalance() - session.getPrice());
+                Gym.getInstance().setGymBalance(Gym.getInstance().getGymBalance() + session.getPrice());
+                gym.addAction("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime() + " for price: " + session.getPrice());
+            }//actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
         } catch (ClientNotRegisteredException | DuplicateClientException | IllegalArgumentException | InsufficientFundsException e) {
             gym.addAction("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
             //actions.add("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
