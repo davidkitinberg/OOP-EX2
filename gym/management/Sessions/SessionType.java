@@ -2,8 +2,8 @@ package gym.management.Sessions;
 
 public enum SessionType {
     Pilates("Pilates", 60, 30),
-    MachinePilates("Machine Pilates", 80, 10),
-    ThaiBoxing("Thai Boxing", 100, 20),
+    MachinePilates("MachinePilates", 80, 10),
+    ThaiBoxing("ThaiBoxing", 100, 20),
     Ninja("Ninja", 150, 5);
 
     private final String name;

@@ -4,13 +4,20 @@ import gym.Exception.InvalidAgeException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Person {
     private String name;
     private int balance;
     private Gender gender;
     private String dateOfBirth; // Now stored as a string in the specified format
+    private int ID;
+    private static int nextID = 1110;
+    private static Map<String, Integer> idMap = new HashMap<>(); // Map to store name + DOB -> ID
+
+
 
     public Person(String name, int balance, Gender gender, String dateOfBirth) throws InvalidAgeException {
         //validateAge(balance);
@@ -19,6 +26,18 @@ public class Person {
         this.balance = balance;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
+        // Assign or reuse ID
+        String uniqueKey = name + "_" + dateOfBirth;
+        if (idMap.containsKey(uniqueKey)) {
+            this.ID = idMap.get(uniqueKey); // Reuse existing ID
+        } else {
+            this.ID = ++nextID;            // Assign new ID
+            idMap.put(uniqueKey, this.ID); // Save ID to the map
+        }
+    }
+
+    public int getID() {
+        return ID;
     }
 
     // Validation for age

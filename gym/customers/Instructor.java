@@ -29,7 +29,7 @@ public class Instructor extends Person {
 
     @Override
     public String toString() {
-        return "ID: " + this.hashCode() +
+        return "ID: " + getID() +
                 " | Name: " + getName() +
                 " | Gender: " + getGender() +
                 " | Birthday: " + getDateOfBirth() +

@@ -3,6 +3,8 @@ package gym.management.Sessions;
 import gym.customers.Client;
 import gym.customers.Gender;
 import gym.customers.Instructor;
+
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,12 @@ public class Session {
     public Session(SessionType type, String dateTime, ForumType forum, Instructor instructor) {
         this.type = type;
         validateFormat(dateTime);
-        this.dateTime = convertDateTimeFormat(dateTime);
+        this.dateTime = dateTime;
         this.forum = forum;
         this.instructor = instructor;
     }
+
+    // This method converts the date format dd-MM-yyyy HH:mm to yyyy-MM-dd'T'HH:mm format
     public static String convertDateTimeFormat(String inputDateTime) {
         // Define the input format
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
@@ -38,7 +42,7 @@ public class Session {
     }
 
 
-    // Validation for date format
+    // Validation of dd-MM-yyyy HH:mm format
     private void validateFormat(String dateOfBirth) {
         if (!dateOfBirth.matches("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}")) {
             throw new IllegalArgumentException("Invalid date format. Use 'dd-MM-yyyy HH:mm'.");
@@ -46,9 +50,10 @@ public class Session {
     }
 
 
+    // This function checks whether the session is expired or not
     public boolean isExpired() {
         // Parse session date-time
-        LocalDateTime sessionDateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        LocalDateTime sessionDateTime = LocalDateTime.parse(convertDateTimeFormat(dateTime), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
         // Get current time formatted to the same pattern
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -104,9 +109,24 @@ public class Session {
         return participants;
     }
 
+    // Returns yyyy-MM-dd'T'HH:mm format
     public String getDateTime() {
+        return convertDateTimeFormat(dateTime);
+    }
+    // Returns yyyy-MM-dd format
+    public String getDate() {
         return dateTime;
     }
+
+    // This function converts yyyy-MM-dd'T'HH:mm format to yyyy-MM-dd format
+    private static String convertDateFormat(String input) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(input, inputFormatter);
+        LocalDate date = dateTime.toLocalDate();
+        return date.toString();
+    }
+
+
     @Override
     public String toString() {
         return "Session Type: " + type.getName() +
