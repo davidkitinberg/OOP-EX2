@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Gym {
-    private static final Gym INSTANCE = new Gym("gym", 1000);
+    private static final Gym INSTANCE = new Gym("gym", 0);
     private String name;
     private Secretary secretary;
     private double gymBalance;
