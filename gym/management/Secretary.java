@@ -3,6 +3,7 @@ package gym.management;
 import gym.customers.*;
 import gym.Exception.*;
 import gym.management.Sessions.*;
+import gym.management.Sessions.Observer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,12 +35,12 @@ public class Secretary extends Person {
 
 
 
-    public static void replaceInstance(String name, int age, Gender gender, String dateOfBirth, int salary) throws InvalidAgeException {
+    public static void replaceInstance(String name, int balance, Gender gender, String dateOfBirth, int salary) throws InvalidAgeException {
         if (instance != null) {
             Client formerSecreraty = new Client(instance.getName(), instance.getBalance(), instance.getGender(), instance.getDateOfBirth());
             formerSecretaries.add(formerSecreraty);
         }
-        instance = new Secretary(name, age, gender, dateOfBirth, salary);
+        instance = new Secretary(name, balance, gender, dateOfBirth, salary);
     }
 
     // Ensure this secretary has access rights
@@ -92,13 +93,13 @@ public class Secretary extends Person {
     }
 
 
-    public Instructor hireInstructor(Person person, int hourlyWage, List<SessionType> qualifications) throws InvalidAgeException {
+    public Instructor hireInstructor(Person person, int salary, List<SessionType> qualifications) throws InvalidAgeException {
         ensureAccess();
-        Instructor instructor = new Instructor(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth(), hourlyWage, qualifications);
+        Instructor instructor = new Instructor(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary, qualifications);
         //instructors.add(instructor);
         gym.addInstructor(instructor);
         //actions.add("Hired new instructor: " + instructor.getName());
-        gym.addAction("Hired new instructor: " + instructor.getName() + " with salary per hour: " + hourlyWage);
+        gym.addAction("Hired new instructor: " + instructor.getName() + " with salary per hour: " + salary);
         return instructor;
     }
 
@@ -193,7 +194,7 @@ public class Secretary extends Person {
                 gym.addAction("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime() + " for price: " + session.getPrice());
             }//actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
         } catch (ClientNotRegisteredException | DuplicateClientException | IllegalArgumentException | InsufficientFundsException e) {
-            gym.addAction("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
+            //gym.addAction("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
             //actions.add("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
             throw e; // Re-throw the exception to propagate it to the caller
         }
@@ -203,8 +204,8 @@ public class Secretary extends Person {
     // Notify clients that related to the specific session
     public void notify(Session session, String message) {
         ensureAccess();
-        for (Client client : session.getParticipants()) {
-            client.receiveNotification(message);
+        for (Observer client : session.getParticipants()) {
+            client.update(message);
         }
         gym.addAction("A message was sent to everyone registered for session " + session.getType() + " on " + session.getDateTime() + " : " + message);
         //actions.add("A message was sent to everyone registered for session " + session.getType() + " on " + session.getDateTime() + " : " + message);
@@ -217,9 +218,9 @@ public class Secretary extends Person {
         {
             if(extractDate(session.getDateTime()).equals(extractDate(date))) // only by format of dd-MM-yyyy
             {
-                for (Client client : session.getParticipants())
+                for (Observer client : session.getParticipants())
                 {
-                    client.receiveNotification(message);
+                    client.update(message);
                 }
                 gym.addAction("A message was sent to everyone registered for a session on " + extractDate(session.getDate()) + " : " + message);
                 //actions.add("A message was sent to everyone registered for a session on " + session.getDateTime() + " : " + message);
@@ -230,16 +231,53 @@ public class Secretary extends Person {
     // Notify all clients
     public void notify(String message) {
         ensureAccess();
-        for(Client client : gym.getClients()) {
-            client.receiveNotification(message);
+        for(Observer client : gym.getClients()) {
+            client.update(message);
         }
         gym.addAction("A message was sent to all gym clients: " + message);
         //actions.add("A message was sent to all gym clients: " + message);
     }
 
+    public void paySalaries1() {
+        ensureAccess();
+        for(Instructor instructor : gym.getInstructors())
+        {
+            for(Session session : gym.getSessions())
+            {
+                if(instructor.equals(session.getInstructor()))
+                {
+                    instructor.setBalance(instructor.getBalance() + instructor.getSalary());
+                    gym.setGymBalance(Gym.getInstance().getGymBalance() - instructor.getSalary());
+                }
+            }
+        }
+        instance.setBalance(instance.getBalance() + instance.getSalary());
+        gym.setGymBalance(Gym.getInstance().getGymBalance() - instance.getSalary());
+        //actions.add("Salaries have been paid to all employees");
+        gym.addAction("Salaries have been paid to all employees");
+    }
     public void paySalaries() {
         ensureAccess();
-        //actions.add("Salaries have been paid to all employees");
+
+        // Pay instructors based on their hourly wage and sessions
+        for (Instructor instructor : gym.getInstructors()) {
+            int totalHours = 0;
+
+            for (Session session : gym.getSessions()) {
+                if (comparePersons(instructor,session.getInstructor())) {
+                    totalHours += 1; // Assuming each session is 1 hour; modify if necessary
+                }
+            }
+
+            int payment = instructor.getSalary() * totalHours; // Calculate total payment
+            instructor.setBalance(instructor.getBalance() + payment); // Pay the instructor
+            gym.setGymBalance(gym.getGymBalance() - payment); // Deduct from gym balance
+        }
+
+        // Pay the secretary
+        instance.setBalance(instance.getBalance() + instance.getSalary());
+        gym.setGymBalance(gym.getGymBalance() - instance.getSalary());
+
         gym.addAction("Salaries have been paid to all employees");
     }
     public int getSalary()

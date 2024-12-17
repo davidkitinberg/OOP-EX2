@@ -39,7 +39,7 @@ public class Gym {
 
 
     public void setSecretary(Person person, int salary) throws InvalidAgeException {
-        Secretary.replaceInstance(person.getName(), person.getAge(), person.getGender(), person.getDateOfBirth(), salary);
+        Secretary.replaceInstance(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary);
         secretary = Secretary.getInstance(); // Update the field to point to the new singleton instance
     }
     public static void addAction(String action) {
@@ -98,6 +98,7 @@ public class Gym {
         for (Instructor instructor : instructors) {
             output.append(instructor.toString()).append("\n");
         }
+        output.append(secretary.toString()).append("\n");
 
         output.append("\nSessions Data:\n");
         for (Session session : sessions) {

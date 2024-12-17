@@ -6,12 +6,12 @@ import gym.management.Sessions.SessionType;
 import java.util.List;
 
 public class Instructor extends Person {
-    private int hourlyWage;
+    private int salary;
     private List<SessionType> qualifications;
 
-    public Instructor(String name, int balance, Gender gender, String dateOfBirth, int hourlyWage, List<SessionType> qualifications) throws InvalidAgeException {
+    public Instructor(String name, int balance, Gender gender, String dateOfBirth, int salary, List<SessionType> qualifications) throws InvalidAgeException {
         super(name, balance, gender, dateOfBirth);
-        this.hourlyWage = hourlyWage;
+        this.salary = salary;
         this.qualifications = qualifications;
     }
 
@@ -19,8 +19,8 @@ public class Instructor extends Person {
         return qualifications.contains(type);
     }
 
-    public int getHourlyWage() {
-        return hourlyWage;
+    public int getSalary() {
+        return salary;
     }
     public List<SessionType> getQualifiedClasses() {
         return qualifications;
@@ -36,8 +36,11 @@ public class Instructor extends Person {
                 " | Age: " + getAge() +
                 " | Balance: " + getBalance() +
                 " | Role: Instructor" +
-                " | Salary per Hour: " + getHourlyWage() +
-                " | Certified Classes: " + getQualifiedClasses();
+                " | Salary per Hour: " + getSalary() +
+                " | Certified Classes: " + String.join(", ",
+                getQualifiedClasses().stream()
+                        .map(SessionType::toString) // Convert each SessionType to its String representation
+                        .toList());
     }
 
 //    private int getBalance() {

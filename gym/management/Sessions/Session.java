@@ -25,6 +25,9 @@ public class Session {
         this.forum = forum;
         this.instructor = instructor;
     }
+    public Instructor getInstructor() {
+        return instructor;
+    }
 
     // This method converts the date format dd-MM-yyyy HH:mm to yyyy-MM-dd'T'HH:mm format
     public static String convertDateTimeFormat(String inputDateTime) {

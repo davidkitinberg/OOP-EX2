@@ -1,11 +1,13 @@
 package gym.customers;
 
 import gym.Exception.InvalidAgeException;
+import gym.management.Sessions.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Client extends Person {
+public class Client extends Person implements Observer {
+
     //private double balance;
     private List<String> notifications = new ArrayList<>();
 
@@ -21,6 +23,11 @@ public class Client extends Person {
 
     public List<String> getNotifications() {
         return notifications;
+    }
+
+    @Override
+    public void update(String message) {
+        notifications.add(message); // Standard method for receiving notifications
     }
 
 
