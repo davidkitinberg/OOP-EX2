@@ -67,6 +67,7 @@ public class Secretary extends Person {
                 throw new DuplicateClientException("Error: The client is already registered");
             }
 
+
             Client client = new Client(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth());
             //clients.add(client);
             gym.addClient(client);
@@ -95,12 +96,25 @@ public class Secretary extends Person {
 
     public Instructor hireInstructor(Person person, int salary, List<SessionType> qualifications) throws InvalidAgeException {
         ensureAccess();
+        for (Client client : gym.getClients()) {
+            if (comparePersons(client, person)) {
+                Instructor instructor = new Instructor(client.getName(), client.getBalance(), client.getGender(), client.getDateOfBirth(), salary, qualifications);
+                //Instructor instructor = new Instructor(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary, qualifications);
+                gym.addInstructor(instructor);
+                gym.addAction("Hired new instructor: " + instructor.getName() + " with salary per hour: " + salary);
+                return instructor;
+            }
+        }
+        // Create new instructor if not already a client
         Instructor instructor = new Instructor(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary, qualifications);
-        //instructors.add(instructor);
         gym.addInstructor(instructor);
-        //actions.add("Hired new instructor: " + instructor.getName());
-        gym.addAction("Hired new instructor: " + instructor.getName() + " with salary per hour: " + salary);
+        gym.addAction("Hired new instructor: " + instructor.getName());
         return instructor;
+        //instructors.add(instructor);
+        //gym.addInstructor(instructor);
+        //actions.add("Hired new instructor: " + instructor.getName());
+        //gym.addAction("Hired new instructor: " + instructor.getName() + " with salary per hour: " + salary);
+        //return instructor;
     }
 
     public Session addSession(SessionType type, String dateTime, ForumType forum, Instructor instructor) throws InstructorNotQualifiedException {
@@ -189,8 +203,28 @@ public class Secretary extends Person {
             if (flag==false)
             {
                 session.addParticipant(client);
-                client.setBalance(client.getBalance() - session.getPrice());
-                Gym.getInstance().setGymBalance(Gym.getInstance().getGymBalance() + session.getPrice());
+                synchronized (client) {
+                    client.reduceBalance(session.getPrice()); // Deduct price from client balance
+                    Instructor thatNigga = gym.getEquivalentInstructor(client);
+                    Client secNigga = gym.getEquivalentClientForSecretary(instance);
+                    if(thatNigga != null)
+                    {
+                        thatNigga.reduceBalance(session.getPrice());
+                    }
+                    if(secNigga != null)
+                    {
+                        secNigga.reduceBalance(session.getPrice());
+                    }
+
+
+                }
+                synchronized (gym) {
+                    session.addParticipant(client); // Add client to session
+                    gym.setGymBalance(gym.getGymBalance() + session.getPrice()); // Add price to gym balance
+                }
+
+                //client.setBalance(client.getBalance() - session.getPrice());
+                //Gym.getInstance().setGymBalance(Gym.getInstance().getGymBalance() + session.getPrice());
                 gym.addAction("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime() + " for price: " + session.getPrice());
             }//actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
         } catch (ClientNotRegisteredException | DuplicateClientException | IllegalArgumentException | InsufficientFundsException e) {
@@ -256,7 +290,7 @@ public class Secretary extends Person {
         //actions.add("Salaries have been paid to all employees");
         gym.addAction("Salaries have been paid to all employees");
     }
-    public void paySalaries() {
+    public void paySalaries2() {
         ensureAccess();
 
         // Pay instructors based on their hourly wage and sessions
@@ -280,6 +314,43 @@ public class Secretary extends Person {
 
         gym.addAction("Salaries have been paid to all employees");
     }
+    public void paySalaries() {
+        ensureAccess();
+
+        synchronized (gym) {
+            // Pay instructors based on sessions conducted
+            for (Instructor instructor : gym.getInstructors()) {
+                int totalHours = 0;
+
+                for (Session session : gym.getSessions()) {
+                    if (comparePersons(instructor, session.getInstructor())) {
+                        totalHours++;
+                    }
+                }
+
+                int payment = instructor.getSalary() * totalHours;
+
+                synchronized (instructor) {
+                    instructor.setBalance(instructor.getBalance() + payment); // Add payment to instructor balance
+                    Client thisNigga = gym.getEquivalentClient(instructor);
+                    thisNigga.setBalance(thisNigga.getBalance() + payment);
+                }
+
+                gym.setGymBalance(gym.getGymBalance() - payment); // Deduct payment from gym balance
+            }
+
+            // Pay the secretary
+            synchronized (this) {
+                setBalance(getBalance() + salary); // Add fixed salary to secretary balance
+                gym.setGymBalance(gym.getGymBalance() - salary); // Deduct salary from gym balance
+            }
+
+            gym.addAction("Salaries have been paid to all employees");
+        }
+    }
+
+
+
     public int getSalary()
     {
         return salary;

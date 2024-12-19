@@ -46,14 +46,14 @@ public class Person {
             throw new InvalidAgeException("Person must be at least 18 years old.");
         }
     }
-    public int getBalance() {
+    public synchronized int getBalance() {
         return balance;
     }
-    public void setBalance(int newBalance) {
+    public synchronized void setBalance(int newBalance) {
         balance = newBalance;
     }
 
-    public void reduceBalance(int amount) {
+    public synchronized void reduceBalance(int amount) {
         balance -= amount;
     }
 

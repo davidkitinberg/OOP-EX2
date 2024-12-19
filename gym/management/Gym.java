@@ -39,7 +39,15 @@ public class Gym {
 
 
     public void setSecretary(Person person, int salary) throws InvalidAgeException {
-        Secretary.replaceInstance(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary);
+        Client client = getEquivalentClientFromPerson(person);
+        if(client != null) {
+            Secretary.replaceInstance(client.getName(), client.getBalance(), client.getGender(), client.getDateOfBirth(), salary);
+
+        }
+        else
+        {
+            Secretary.replaceInstance(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth(), salary);
+        }
         secretary = Secretary.getInstance(); // Update the field to point to the new singleton instance
     }
     public static void addAction(String action) {
@@ -70,16 +78,53 @@ public class Gym {
         return instructors;
     }
 
-    public void setGymBalance(double gymBalance) {
+    public synchronized void setGymBalance(double gymBalance) {
         this.gymBalance = gymBalance;
     }
 
-    public double getGymBalance() {
+    public synchronized double getGymBalance() {
         return gymBalance;
     }
 
     public Secretary getSecretary() {
         return Secretary.getInstance();
+    }
+    public Client getEquivalentClient(Instructor instructor) {
+        for(Client client : clients) {
+            if(client.getName().equals(instructor.getName()) && client.getGender().equals(instructor.getGender())
+            && client.getDateOfBirth().equals(instructor.getDateOfBirth())) {
+                return client;
+            }
+        }
+        return null;
+    }
+    public Client getEquivalentClientFromPerson(Person person) {
+        for(Client client : clients) {
+            if(client.getName().equals(person.getName()) && client.getGender().equals(person.getGender())
+                    && client.getDateOfBirth().equals(person.getDateOfBirth())) {
+                return client;
+            }
+        }
+        return null;
+    }
+    public Client getEquivalentClientForSecretary(Secretary secretary) {
+        for(Client client : clients) {
+            if(client.getName().equals(secretary.getName()) && client.getGender().equals(secretary.getGender())
+                    && client.getDateOfBirth().equals(secretary.getDateOfBirth())) {
+                return client;
+            }
+        }
+        return null;
+    }
+
+    public Instructor getEquivalentInstructor(Client client) {
+        for(Instructor instructor : instructors) {
+            if(instructor.getName().equals(client.getName()) && client.getGender().equals(instructor.getGender())
+            && client.getDateOfBirth().equals(instructor.getDateOfBirth())) {
+                return instructor;
+            }
+        }
+        return null;
     }
 
     @Override
