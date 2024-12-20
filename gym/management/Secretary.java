@@ -11,10 +11,6 @@ import java.util.*;
 
 public class Secretary extends Person {
     private int salary;
-    private List<Client> clients = new ArrayList<>();
-    //private List<Instructor> instructors = new ArrayList<>();
-    //private List<Session> sessions = new ArrayList<>();
-    //private List<String> actions = new ArrayList<>();
     private static Secretary instance;
     private static List<Client> formerSecretaries = new ArrayList<>();
     private static Gym gym = Gym.getInstance();
@@ -38,7 +34,7 @@ public class Secretary extends Person {
     public static void replaceInstance(String name, int balance, Gender gender, String dateOfBirth, int salary) throws InvalidAgeException {
         if (instance != null) {
             Client formerSecreraty = new Client(instance.getName(), instance.getBalance(), instance.getGender(), instance.getDateOfBirth());
-            formerSecretaries.add(formerSecreraty);
+            //formerSecretaries.add(formerSecreraty);
         }
         instance = new Secretary(name, balance, gender, dateOfBirth, salary);
     }

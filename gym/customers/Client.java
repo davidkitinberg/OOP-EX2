@@ -1,6 +1,8 @@
 package gym.customers;
 
 import gym.Exception.InvalidAgeException;
+import gym.management.Gym;
+import gym.management.Secretary;
 import gym.management.Sessions.Observer;
 
 import java.util.ArrayList;
@@ -8,17 +10,17 @@ import java.util.List;
 
 public class Client extends Person implements Observer {
 
-    //private double balance;
     private List<String> notifications = new ArrayList<>();
 
     public Client(String name, int balance, Gender gender, String dateOfBirth) throws InvalidAgeException {
         super(name, balance, gender, dateOfBirth); // This can throw InvalidAgeException
-        //this.balance = balance;
+
     }
 
 
     public void receiveNotification(String message) {
         notifications.add(message);
+
     }
 
     public List<String> getNotifications() {

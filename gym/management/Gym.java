@@ -52,19 +52,19 @@ public class Gym {
         }
         secretary = Secretary.getInstance(); // Update the field to point to the new singleton instance
     }
-    public static void addAction(String action) {
+    public void addAction(String action) {
         actions.add(action);
     }
-    public static List<String> getActions() {
+    public List<String> getActions() {
         return actions;
     }
-    public static void addPerson(Person person) {
+    public void addPerson(Person person) {
         persons.add(person);
     }
-    public static void addSession(Session session) {
+    public void addSession(Session session) {
         sessions.add(session);
     }
-    public static List<Session> getSessions() {
+    public List<Session> getSessions() {
         return sessions;
     }
     public void addClient(Client client) {
