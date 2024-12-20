@@ -206,7 +206,7 @@ public class Secretary extends Person {
                 synchronized (client) {
                     client.reduceBalance(session.getPrice()); // Deduct price from client balance
                     Instructor thatNigga = gym.getEquivalentInstructor(client);
-                    Client secNigga = gym.getEquivalentClientForSecretary(instance);
+                    Person secNigga = gym.getEquivalentClient(this);
                     if(thatNigga != null)
                     {
                         thatNigga.reduceBalance(session.getPrice());
