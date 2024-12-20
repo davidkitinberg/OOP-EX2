@@ -67,7 +67,7 @@ public class Secretary extends Person {
                 throw new DuplicateClientException("Error: The client is already registered");
             }
 
-
+            gym.addPerson(person);
             Client client = new Client(person.getName(), person.getBalance(), person.getGender(), person.getDateOfBirth());
             //clients.add(client);
             gym.addClient(client);
@@ -200,40 +200,27 @@ public class Secretary extends Person {
                 flag=true;
 
             }
-            if (flag==false)
+            // If registration is optional
+            if (!flag)
             {
+                // Adding participant to the session
                 session.addParticipant(client);
-                synchronized (client) {
-                    List<Person> allInst = gym.getEquivilants(client);
 
-                    for (Person person : allInst) {
-                        if (person!=null)
+                // Reduce balance to all same instances
+                List<Person> allInst = gym.getEquivilants(client);
+                for (Person person : allInst)
+                {
+                    if (person != null)
+                    {
                         person.reduceBalance(session.getPrice());
-
                     }
-//                    client.reduceBalance(session.getPrice()); // Deduct price from client balance
-//                    Instructor thatNigga = gym.getEquivalentInstructor(client);
-//                    Person secNigga = getEquivilantPerson(client);
-//                    if(thatNigga != null)
-//                    {
-//                        thatNigga.reduceBalance(session.getPrice());
-//                    }
-//                    if(secNigga != null)
-//                    {
-//                        secNigga.reduceBalance(session.getPrice());
-//                    }
-
-
                 }
-                synchronized (gym) {
-//                    session.addParticipant(client); // Add client to session
-                    gym.setGymBalance(gym.getGymBalance() + session.getPrice()); // Add price to gym balance
-                }
-
+                // Update gym balance
+                gym.setGymBalance(gym.getGymBalance() + session.getPrice()); // Add price to gym balance
                 //client.setBalance(client.getBalance() - session.getPrice());
                 //Gym.getInstance().setGymBalance(Gym.getInstance().getGymBalance() + session.getPrice());
                 gym.addAction("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime() + " for price: " + session.getPrice());
-            }//actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
+                }//actions.add("Registered client: " + client.getName() + " to session: " + session.getType() + " on " + session.getDateTime());
         } catch (ClientNotRegisteredException | DuplicateClientException | IllegalArgumentException | InsufficientFundsException e) {
             //gym.addAction("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
             //actions.add("Failed to register client: " + client.getName() + " to session: " + session.getType() + " - " + e.getMessage());
@@ -279,84 +266,52 @@ public class Secretary extends Person {
         //actions.add("A message was sent to all gym clients: " + message);
     }
 
-    public void paySalaries1() {
-        ensureAccess();
-        for(Instructor instructor : gym.getInstructors())
-        {
-            for(Session session : gym.getSessions())
-            {
-                if(instructor.equals(session.getInstructor()))
-                {
-                    instructor.setBalance(instructor.getBalance() + instructor.getSalary());
-                    gym.setGymBalance(Gym.getInstance().getGymBalance() - instructor.getSalary());
-                }
-            }
-        }
-        instance.setBalance(instance.getBalance() + instance.getSalary());
-        gym.setGymBalance(Gym.getInstance().getGymBalance() - instance.getSalary());
-        //actions.add("Salaries have been paid to all employees");
-        gym.addAction("Salaries have been paid to all employees");
-    }
-    public void paySalaries2() {
-        ensureAccess();
-
-        // Pay instructors based on their hourly wage and sessions
-        for (Instructor instructor : gym.getInstructors()) {
-            int totalHours = 0;
-
-            for (Session session : gym.getSessions()) {
-                if (comparePersons(instructor,session.getInstructor())) {
-                    totalHours += 1; // Assuming each session is 1 hour; modify if necessary
-                }
-            }
-
-            int payment = instructor.getSalary() * totalHours; // Calculate total payment
-            instructor.setBalance(instructor.getBalance() + payment); // Pay the instructor
-            gym.setGymBalance(gym.getGymBalance() - payment); // Deduct from gym balance
-        }
-
-        // Pay the secretary
-        instance.setBalance(instance.getBalance() + instance.getSalary());
-        gym.setGymBalance(gym.getGymBalance() - instance.getSalary());
-
-        gym.addAction("Salaries have been paid to all employees");
-    }
     public void paySalaries() {
         ensureAccess();
 
-        synchronized (gym) {
+
             // Pay instructors based on sessions conducted
-            for (Instructor instructor : gym.getInstructors()) {
+            for (Instructor instructor : gym.getInstructors())
+            {
                 int totalHours = 0;
 
+                // Sum up total hours of work for the specific instructor
                 for (Session session : gym.getSessions()) {
                     if (comparePersons(instructor, session.getInstructor())) {
                         totalHours++;
                     }
                 }
 
+                // Update balance to all same instances
+                List <Person> allInst = gym.getEquivilants(instructor);
                 int payment = instructor.getSalary() * totalHours;
-
-                synchronized (instructor) {
-                    instructor.setBalance(instructor.getBalance() + payment); // Add payment to instructor balance
-                    Client thisNigga = gym.getEquivalentClient(instructor);
-                    thisNigga.setBalance(thisNigga.getBalance() + payment);
+                for (Person person : allInst)
+                {
+                    if (person!=null)
+                    {
+                        person.setBalance(person.getBalance() + payment);
+                    }
                 }
 
+                // Update gym balance
                 gym.setGymBalance(gym.getGymBalance() - payment); // Deduct payment from gym balance
             }
 
             // Pay the secretary
-            synchronized (this) {
+                List <Person> allInstForSecretary = gym.getEquivilants(this);
+                for (Person person : allInstForSecretary)
+                {
+                    if (person!=null)
+                    {
+                        person.setBalance(this.getBalance() + this.getBalance());
+                    }
+                }
                 setBalance(getBalance() + salary); // Add fixed salary to secretary balance
                 gym.setGymBalance(gym.getGymBalance() - salary); // Deduct salary from gym balance
-            }
 
             gym.addAction("Salaries have been paid to all employees");
-        }
+
     }
-
-
 
     public int getSalary()
     {
