@@ -204,22 +204,29 @@ public class Secretary extends Person {
             {
                 session.addParticipant(client);
                 synchronized (client) {
-                    client.reduceBalance(session.getPrice()); // Deduct price from client balance
-                    Instructor thatNigga = gym.getEquivalentInstructor(client);
-                    Person secNigga = gym.getEquivalentClient(this);
-                    if(thatNigga != null)
-                    {
-                        thatNigga.reduceBalance(session.getPrice());
+                    List<Person> allInst = gym.getEquivilants(client);
+
+                    for (Person person : allInst) {
+                        if (person!=null)
+                        person.reduceBalance(session.getPrice());
+
                     }
-                    if(secNigga != null)
-                    {
-                        secNigga.reduceBalance(session.getPrice());
-                    }
+//                    client.reduceBalance(session.getPrice()); // Deduct price from client balance
+//                    Instructor thatNigga = gym.getEquivalentInstructor(client);
+//                    Person secNigga = getEquivilantPerson(client);
+//                    if(thatNigga != null)
+//                    {
+//                        thatNigga.reduceBalance(session.getPrice());
+//                    }
+//                    if(secNigga != null)
+//                    {
+//                        secNigga.reduceBalance(session.getPrice());
+//                    }
 
 
                 }
                 synchronized (gym) {
-                    session.addParticipant(client); // Add client to session
+//                    session.addParticipant(client); // Add client to session
                     gym.setGymBalance(gym.getGymBalance() + session.getPrice()); // Add price to gym balance
                 }
 

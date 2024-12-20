@@ -16,7 +16,7 @@ public class Gym {
     private double gymBalance;
     private static List<String> actions = new ArrayList<>();
     private static List<Session> sessions = new ArrayList<>();
-    private List<Client> clients = new ArrayList<>();
+    private  List<Client> clients = new ArrayList<>();
     private static List<Instructor> instructors = new ArrayList<>();
 
 
@@ -116,7 +116,6 @@ public class Gym {
         }
         return null;
     }
-
     public Instructor getEquivalentInstructor(Client client) {
         for(Instructor instructor : instructors) {
             if(instructor.getName().equals(client.getName()) && client.getGender().equals(instructor.getGender())
@@ -126,7 +125,105 @@ public class Gym {
         }
         return null;
     }
+//    void reduceBalances(Person person1) {
+//        if (person1 instanceof Client)
+//        {
+//            Client client = getEquivalentClient(person1);
+//            if (client.isContained(person1.getPersonList(),client)){
+//
+//            }
+//        }
+//
+//        for (Person p : person1.getPersonList() ) {
+//            if (p instanceof Client) {
+//                Person person = (Person) obj;
+//                if (p.getName().equals(person.getName()) &&
+//                        client.getGender().equals(person.getGender()) &&
+//                        client.getDateOfBirth().equals(person.getDateOfBirth())) {
+//                    return client;
+//                }
+//            } else if (obj instanceof Instructor) {
+//                Instructor instructor = (Instructor) obj;
+//                if (client.getName().equals(instructor.getName()) &&
+//                        client.getGender().equals(instructor.getGender()) &&
+//                        client.getDateOfBirth().equals(instructor.getDateOfBirth())) {
+//                    return client;
+//                }
+//            } else if (obj instanceof Secretary) {
+//                Secretary secretary = (Secretary) obj;
+//                if (client.getName().equals(secretary.getName()) &&
+//                        client.getGender().equals(secretary.getGender()) &&
+//                        client.getDateOfBirth().equals(secretary.getDateOfBirth())) {
+//                    return client;
+//                }
+//            }
+//        }
+//        return null;
+//    }
+    public  List<Person> getEquivilants(Object obj) {
+        List<Person> equivalents = new ArrayList<>();
 
+        // Check if obj is a Client
+        if (obj instanceof Client) {
+            Client client = (Client) obj;
+            for (Client c : getInstance().clients) {
+                if (c.getName().equals(client.getName()) &&
+                        c.getGender().equals(client.getGender()) &&
+                        c.getDateOfBirth().equals(client.getDateOfBirth())) {
+                    equivalents.add(c);
+                }
+            }
+        }
+
+        // Check if obj is an Instructor
+        if (obj instanceof Instructor) {
+            Instructor instructor = (Instructor) obj;
+            for (Instructor i : getInstance().getInstructors()) {
+                if (i.getName().equals(instructor.getName()) &&
+                        i.getGender().equals(instructor.getGender()) &&
+                        i.getDateOfBirth().equals(instructor.getDateOfBirth())) {
+                    equivalents.add(i);
+                }
+            }
+        }
+
+        // Check if obj is a Secretary
+        if (obj instanceof Secretary) {
+            Secretary secretary = (Secretary) obj;
+            if (secretary.getName().equals(((Secretary) obj).getName()) &&
+                    secretary.getGender().equals(((Secretary) obj).getGender()) &&
+                    secretary.getDateOfBirth().equals(((Secretary) obj).getDateOfBirth())) {
+                equivalents.add(secretary);
+            }
+        }
+
+        // Check if obj is a Person (general fallback)
+        if (obj instanceof Person) {
+            Person person = (Person) obj;
+            for (Client c : getInstance().getClients()) {
+                if (c.getName().equals(person.getName()) &&
+                        c.getGender().equals(person.getGender()) &&
+                        c.getDateOfBirth().equals(person.getDateOfBirth())) {
+                    equivalents.add(c);
+                }
+            }
+            for (Instructor i : getInstance().getInstructors()) {
+                if (i.getName().equals(person.getName()) &&
+                        i.getGender().equals(person.getGender()) &&
+                        i.getDateOfBirth().equals(person.getDateOfBirth())) {
+                    equivalents.add(i);
+                }
+            }
+            if ( getInstance().getSecretary() != null &&
+                    getInstance().getSecretary().getName().equals(person.getName()) &&
+                    getInstance().getSecretary().getGender().equals(person.getGender()) &&
+                    getInstance().getSecretary().getDateOfBirth().equals(person.getDateOfBirth())) {
+                equivalents.add(getInstance().getSecretary());
+            }
+        }
+
+        return equivalents;
+    }
     @Override
     public String toString() {
         StringBuilder output = new StringBuilder();

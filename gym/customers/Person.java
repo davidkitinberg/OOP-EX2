@@ -1,9 +1,11 @@
 package gym.customers;
 
 import gym.Exception.InvalidAgeException;
+import gym.management.Secretary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class Person {
     private int ID;
     private static int nextID = 1110;
     private static Map<String, Integer> idMap = new HashMap<>(); // Map to store name + DOB -> ID
-
+    private List<Person> personList = new ArrayList<>();
 
 
     public Person(String name, int balance, Gender gender, String dateOfBirth) throws InvalidAgeException {
@@ -34,6 +36,7 @@ public class Person {
             this.ID = ++nextID;            // Assign new ID
             idMap.put(uniqueKey, this.ID); // Save ID to the map
         }
+        personList.add(this);
     }
 
     public int getID() {
@@ -46,9 +49,11 @@ public class Person {
             throw new InvalidAgeException("Person must be at least 18 years old.");
         }
     }
+
     public synchronized int getBalance() {
         return balance;
     }
+
     public synchronized void setBalance(int newBalance) {
         balance = newBalance;
     }
@@ -92,6 +97,7 @@ public class Person {
                 ", dateOfBirth='" + dateOfBirth + '\'' +
                 '}';
     }
+
     public static boolean comparePersons(Person c1, Person c2) {
         // Compare all fields for equality
         return c1.getName().equals(c2.getName()) &&
@@ -99,6 +105,21 @@ public class Person {
                 c1.getGender() == c2.getGender() &&
                 c1.getDateOfBirth().equals(c2.getDateOfBirth());
     }
+
+    public List<Person> getPersonList() {
+        return personList;
+    }
+    //    public Person getEquivilantPerson(Client client) {
+//        for (Person person : personList) {
+//            if (client.getName().equals(person.getName()) &&
+//                    client.getGender().equals(person.getGender()) &&
+//                    client.getDateOfBirth().equals(person.getDateOfBirth())) {
+//                return person;
+//            }
+//        }
+//        return null;
+//    }
+
     public static boolean isContained(List<Client> personList, Person personToCheck) {
         // Iterate over the list and compare each Person
         for (Person p : personList) {
