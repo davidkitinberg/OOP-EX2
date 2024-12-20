@@ -150,19 +150,26 @@ public class Gym {
         output.append("Gym Balance: ").append(gymBalance).append("\n\n");
 
         output.append("Clients Data:\n");
-        for (Client client : clients) {
-            output.append(client.toString()).append("\n");
+        for (int i = 0; i < clients.size(); i++) {
+            output.append(clients.get(i).toString());
+            if (i < clients.size() - 1) {
+                output.append("\n");
+            }
         }
 
-        output.append("\nEmployees Data:\n");
-        for (Instructor instructor : instructors) {
-            output.append(instructor.toString()).append("\n");
+        output.append("\n\nEmployees Data:\n");
+        for (int i = 0; i < instructors.size(); i++) {
+            output.append(instructors.get(i).toString());
+            output.append("\n");
         }
         output.append(secretary.toString()).append("\n");
 
         output.append("\nSessions Data:\n");
-        for (Session session : sessions) {
-            output.append(session.toString()).append("\n");
+        for (int i = 0; i < sessions.size(); i++) {
+            output.append(sessions.get(i).toString());
+            if (i < sessions.size() - 1) {
+                output.append("\n");
+            }
         }
 
         return output.toString();
