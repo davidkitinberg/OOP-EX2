@@ -3,6 +3,7 @@ package gym.management.Sessions;
 import gym.customers.Client;
 import gym.customers.Gender;
 import gym.customers.Instructor;
+import gym.management.Subject;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -11,12 +12,14 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 
-public class Session {
+public class Session implements Subject {
     private final SessionType type;
     private final String dateTime; // Stored as "dd-MM-yyyy HH:mm"
     private final ForumType forum;
     private final Instructor instructor;
     private final List<Client> participants = new ArrayList<>();
+    private final List<Observer> Subscribers = new ArrayList<>();
+
 
     public Session(SessionType type, String dateTime, ForumType forum, Instructor instructor) {
         this.type = type;
@@ -92,6 +95,7 @@ public class Session {
             return false; // Client already registered
         }
         participants.add(client);
+        Subscribers.add(client);
         return true;
     }
 
@@ -139,4 +143,26 @@ public class Session {
                 " | Participants: " + participants.size() + "/" + type.getMaxParticipants();
     }
 
+    @Override
+    public void registerObserver(Observer o) {
+        if (!Subscribers.contains(o)) {
+            Subscribers.add(o);
+        }
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        Subscribers.remove(o);
+    }
+
+    public List<Observer> getSubscribers() {
+        return Subscribers;
+    }
+
+    @Override
+    public void notifyObservers(String s) {
+        for (Observer o : Subscribers) {
+            o.update(s);
+        }
+    }
 }

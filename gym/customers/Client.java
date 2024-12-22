@@ -16,13 +16,6 @@ public class Client extends Person implements Observer {
         super(name, balance, gender, dateOfBirth); // This can throw InvalidAgeException
 
     }
-
-
-    public void receiveNotification(String message) {
-        notifications.add(message);
-
-    }
-
     public List<String> getNotifications() {
         return notifications;
     }

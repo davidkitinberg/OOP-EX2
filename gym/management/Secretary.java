@@ -12,7 +12,6 @@ import java.util.*;
 public class Secretary extends Person {
     private int salary;
     private static Secretary instance;
-    private static List<Client> formerSecretaries = new ArrayList<>();
     private static Gym gym = Gym.getInstance();
 
 
@@ -228,9 +227,7 @@ public class Secretary extends Person {
     // Notify clients that related to the specific session
     public void notify(Session session, String message) {
         ensureAccess();
-        for (Observer client : session.getParticipants()) {
-            client.update(message);
-        }
+        notifyObservers(session.getSubscribers(), message);
         gym.addAction("A message was sent to everyone registered for session " + session.getType() + " on " + session.getDateTime() + " : " + message);
         //actions.add("A message was sent to everyone registered for session " + session.getType() + " on " + session.getDateTime() + " : " + message);
     }
@@ -242,10 +239,7 @@ public class Secretary extends Person {
         {
             if(extractDate(session.getDateTime()).equals(extractDate(date))) // only by format of dd-MM-yyyy
             {
-                for (Observer client : session.getParticipants())
-                {
-                    client.update(message);
-                }
+                notifyObservers(session.getSubscribers(), message);
                 gym.addAction("A message was sent to everyone registered for a session on " + extractDate(session.getDate()) + " : " + message);
                 //actions.add("A message was sent to everyone registered for a session on " + session.getDateTime() + " : " + message);
             }
@@ -261,7 +255,11 @@ public class Secretary extends Person {
         gym.addAction("A message was sent to all gym clients: " + message);
         //actions.add("A message was sent to all gym clients: " + message);
     }
-
+    private void notifyObservers(List<Observer> observers, String message) {
+        for (Observer observer : gym.getClients()) {
+            observer.update(message);
+        }
+    }
     public void paySalaries() {
         ensureAccess();
 
